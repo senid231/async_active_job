@@ -13,15 +13,14 @@ module AsyncActiveJob
     # @return [AsyncActiveJob::Job]
     def enqueue_at(active_job, timestamp)
       scheduled_at = timestamp ? Time.zone.at(timestamp) : nil
-      ActiveSupport::Notifications.instrument('enqueue_job.async_active_job', active_job: active_job,
-                                                                       scheduled_at: scheduled_at
-      ) do |instrument_payload|
+      opts = { active_job: active_job, scheduled_at: scheduled_at }
+      ActiveSupport::Notifications.instrument('enqueue_job.async_active_job', opts) do |instrument_payload|
         async_active_job = AsyncActiveJob::Job.enqueue(
-                      JobWrapper.new(active_job.serialize),
-                      queue_name: active_job.queue_name || AsyncActiveJob.configuration.default_queue_name,
-                      priority: active_job.priority || AsyncActiveJob.configuration.default_priority,
-                      run_at: scheduled_at || Time.zone.now
-                    )
+                             JobWrapper.new(active_job.serialize),
+                             queue_name: active_job.queue_name || AsyncActiveJob.configuration.default_queue_name,
+                             priority: active_job.priority || AsyncActiveJob.configuration.default_priority,
+                             run_at: scheduled_at || Time.zone.now
+                           )
         instrument_payload[:async_active_job] = async_active_job
         active_job.provider_job_id = async_active_job.id
         async_active_job
