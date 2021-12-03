@@ -31,7 +31,7 @@ module AsyncActiveJob
     #   @return [Integer]
     # @!method max_run_timeout=(value)
     #   @param value [Integer]
-    attr_config :max_run_timeout, default: 1.hour
+    attr_config :max_run_timeout, default: 60 * 60 # 1 hour
 
     # @!method default_priority
     #   @return [Integer]
