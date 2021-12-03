@@ -1,5 +1,7 @@
 # AsyncActiveJob
 
+[![Tests](https://github.com/senid231/async_active_job/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/senid231/async_active_job/actions/workflows/tests.yml)
+
 Multi-fiber, Postgres-based, ActiveJob backend for Ruby on Rails.
 Based on [async](https://github.com/socketry/async)
 
