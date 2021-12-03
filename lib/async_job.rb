@@ -3,6 +3,7 @@
 require 'async_job/adapter'
 require 'async_job/configuration'
 require 'active_job/queue_adapters/async_job_adapter'
+require 'async_job/engine'
 
 module AsyncJob
   module_function

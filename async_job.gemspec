@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email = ['senid231@gmail.com']
 
   spec.summary = 'Multi-fiber, Postgres-based, ActiveJob backend for Ruby on Rails'
-  spec.homepage = 'https://github.com/didww/async_job'
+  spec.homepage = 'https://github.com/senid231/async_job'
   spec.license = 'MIT'
   spec.required_ruby_version = '>= 2.6.0'
 
@@ -24,12 +24,11 @@ Gem::Specification.new do |spec|
       (f == __FILE__) || f.match(%r{\A(?:(?:spec)/|\.(?:git|github))})
     end
   end
-  spec.bindir = 'exe'
-  spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
   spec.add_dependency 'activejob'
   spec.add_dependency 'async', '~> 1.0'
+  spec.add_dependency 'dry-cli', '~> 0.6'
   spec.metadata = {
     'rubygems_mfa_required' => 'true'
   }

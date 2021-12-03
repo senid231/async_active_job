@@ -1,0 +1,25 @@
+class CreateAsyncJobs < ActiveRecord::Migration<%= migration_version %>
+  def up
+    create_table :async_jobs do |t|
+      t.string :queue_name
+      t.integer :priority, limit: 2, default: 0, null: false
+      t.integer :attempts, limit: 2, default: 0, null: false
+      t.json :job_data, null: false
+      t.text :last_error
+      t.timestamp :run_at
+      t.timestamp :locked_at
+      t.string :locked_by
+      t.timestamp :failed_at
+      t.timestamps null: false
+    end
+
+    add_index :async_jobs, :priority, name: 'async_jobs_priority_idx'
+    add_index :async_jobs, :run_at, name: 'async_jobs_run_at_idx'
+    add_index :async_jobs, :locked_at, name: 'async_jobs_locked_at_idx'
+    add_index :async_jobs, :queue_name, name: 'async_jobs_queue_name_idx'
+  end
+
+  def down
+    drop_table :async_jobs
+  end
+end

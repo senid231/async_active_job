@@ -36,6 +36,10 @@ Layout/MultilineMethodCallBraceLayout:
 Layout/FirstArgumentIndentation:
   EnforcedStyle: consistent_relative_to_receiver
 
+Lint/ScriptPermission:
+  Exclude:
+    - 'lib/generators/async_job/templates/*'
+
 Metrics/BlockLength:
   Max: 80
   Exclude:

@@ -5,14 +5,18 @@ require 'async'
 module AsyncJob
   class Runner
     class << self
-      delegate :start, to: :new
+      def start(queues: nil)
+        new(queues: queues).start
+      end
     end
 
-    def initialize
+    # @param queues [Array,nil]
+    def initialize(queues: nil)
       @reactor = nil
       @logger = Rails.logger
       @interrupted = false
       @task_count = 0
+      @queues = queues&.presence
     end
 
     def start
@@ -41,7 +45,7 @@ module AsyncJob
         return
       end
 
-      async_job = AsyncJob::Job.next_with_lock
+      async_job = AsyncJob::Job.next_with_lock(queues)
       if async_job
         run_task do
           with_optional_timeout(AsyncJob.configuration.max_run_timeout) do
@@ -58,7 +62,7 @@ module AsyncJob
 
     private
 
-    attr_reader :reactor, :logger
+    attr_reader :reactor, :logger, :queues
     attr_accessor :task_count
 
     def with_optional_timeout(duration, &block)

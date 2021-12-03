@@ -69,6 +69,7 @@ module AsyncJob
     #   @param value [String]
     attr_config :active_record_base_class_name, default: 'ApplicationRecord'
 
+    # @return [Class<ActiveRecord::Base>]
     def active_record_base_class
       active_record_base_class_name.constantize
     end
