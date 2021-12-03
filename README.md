@@ -33,7 +33,7 @@ $ rails g async_active_job
 
 Generate migration:
 ```shell
-$ rails g async_active_job:migration
+$ rails g async_active_job:active_record
 ```
 
 Apply migration:
