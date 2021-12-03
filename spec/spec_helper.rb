@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'rails'
 require 'async_active_job'
 
 RSpec.configure do |config|

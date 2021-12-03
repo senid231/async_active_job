@@ -5,6 +5,8 @@ source 'https://rubygems.org'
 # Specify your gem's dependencies in async_active_job.gemspec
 gemspec
 
+gem 'rails', ENV.fetch('RAILS_VERSION', '~> 6.0')
+
 gem 'rake', '~> 13.0'
 
 gem 'rspec', '~> 3.0'
