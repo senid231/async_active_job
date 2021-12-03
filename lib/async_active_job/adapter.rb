@@ -1,30 +1,30 @@
 # frozen_string_literal: true
 
-module AsyncJob
+module AsyncActiveJob
   class Adapter
     # @param active_job [ActiveJob::Base] the job to be enqueued from +#perform_later+
-    # @return [AsyncJob::Job]
+    # @return [AsyncActiveJob::Job]
     def enqueue(active_job)
       enqueue_at(active_job, nil)
     end
 
     # @param active_job [ActiveJob::Base] the job to be enqueued from +#perform_later+
     # @param timestamp [Integer, nil] the epoch time to perform the job
-    # @return [AsyncJob::Job]
+    # @return [AsyncActiveJob::Job]
     def enqueue_at(active_job, timestamp)
       scheduled_at = timestamp ? Time.zone.at(timestamp) : nil
-      ActiveSupport::Notifications.instrument('enqueue_job.async_job', active_job: active_job,
+      ActiveSupport::Notifications.instrument('enqueue_job.async_active_job', active_job: active_job,
                                                                        scheduled_at: scheduled_at
       ) do |instrument_payload|
-        async_job = AsyncJob::Job.enqueue(
+        async_active_job = AsyncActiveJob::Job.enqueue(
                       JobWrapper.new(active_job.serialize),
-                      queue_name: active_job.queue_name || AsyncJob.configuration.default_queue_name,
-                      priority: active_job.priority || AsyncJob.configuration.default_priority,
+                      queue_name: active_job.queue_name || AsyncActiveJob.configuration.default_queue_name,
+                      priority: active_job.priority || AsyncActiveJob.configuration.default_priority,
                       run_at: scheduled_at || Time.zone.now
                     )
-        instrument_payload[:async_job] = async_job
-        active_job.provider_job_id = async_job.id
-        async_job
+        instrument_payload[:async_active_job] = async_active_job
+        active_job.provider_job_id = async_active_job.id
+        async_active_job
       end
     end
 

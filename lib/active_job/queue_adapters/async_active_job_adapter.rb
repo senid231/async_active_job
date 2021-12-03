@@ -2,7 +2,7 @@
 
 module ActiveJob
   module QueueAdapters
-    class AsyncJobAdapter < AsyncJob::Adapter
+    class AsyncActiveJobAdapter < AsyncActiveJob::Adapter
     end
   end
 end

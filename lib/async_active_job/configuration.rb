@@ -2,7 +2,7 @@
 
 require 'singleton'
 
-module AsyncJob
+module AsyncActiveJob
   class Configuration
     include Singleton
 

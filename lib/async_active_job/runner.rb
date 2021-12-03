@@ -2,7 +2,7 @@
 
 require 'async'
 
-module AsyncJob
+module AsyncActiveJob
   class Runner
     class << self
       def start(queues: nil)
@@ -36,8 +36,8 @@ module AsyncJob
     end
 
     def run_once
-      task_limit = AsyncJob.configuration.task_limit
-      task_limit_sleep_duration = AsyncJob.configuration.task_limit_sleep_duration
+      task_limit = AsyncActiveJob.configuration.task_limit
+      task_limit_sleep_duration = AsyncActiveJob.configuration.task_limit_sleep_duration
       if task_limit && task_count >= task_limit
 
         logger.debug { "Task limit #{task_limit} reached, sleeping for #{task_limit_sleep_duration} seconds" }
@@ -45,16 +45,16 @@ module AsyncJob
         return
       end
 
-      async_job = AsyncJob::Job.next_with_lock(queues)
-      if async_job
+      async_active_job = AsyncActiveJob::Job.next_with_lock(queues)
+      if async_active_job
         run_task do
-          with_optional_timeout(AsyncJob.configuration.max_run_timeout) do
-            run_job(async_job)
+          with_optional_timeout(AsyncActiveJob.configuration.max_run_timeout) do
+            run_job(async_active_job)
           end
         end
         reactor.sleep(0)
       else
-        no_job_sleep_duration = AsyncJob.configuration.no_job_sleep_duration
+        no_job_sleep_duration = AsyncActiveJob.configuration.no_job_sleep_duration
         logger.debug { "No jobs, sleeping for #{no_job_sleep_duration} seconds" }
         reactor.sleep(no_job_sleep_duration)
       end
@@ -71,11 +71,11 @@ module AsyncJob
       reactor.with_timeout(duration, &block)
     end
 
-    def run_job(async_job)
+    def run_job(async_active_job)
       self.task_count += 1
-      job_name = "AsyncJob::Job##{async_job.id} (Job ID: #{async_job.active_job_id})"
+      job_name = "AsyncActiveJob::Job##{async_active_job.id} (Job ID: #{async_active_job.active_job_id})"
       logger.debug { "Performing #{job_name}" }
-      ms = Benchmark.ms { AsyncJob::Job.perform_job(async_job) }
+      ms = Benchmark.ms { AsyncActiveJob::Job.perform_job(async_active_job) }
       logger.debug { format("#{job_name} performed in %.2fms", ms) }
       self.task_count -= 1
     end

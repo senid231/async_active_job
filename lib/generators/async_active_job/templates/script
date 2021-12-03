@@ -2,6 +2,6 @@
 # frozen_string_literal: true
 
 require File.expand_path(File.join(__dir__, '../config/environment'))
-require 'async_job/cli'
+require 'async_active_job/cli'
 
-AsyncJob::CLI.call(ARGV)
+AsyncActiveJob::CLI.call(ARGV)

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module AsyncJob
+module AsyncActiveJob
   class Engine < ::Rails::Engine
-    isolate_namespace AsyncJob
+    isolate_namespace AsyncActiveJob
   end
 end

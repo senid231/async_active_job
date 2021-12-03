@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-require_relative 'lib/async_job/version'
+require_relative 'lib/async_active_job/version'
 
 Gem::Specification.new do |spec|
-  spec.name = 'async_job'
-  spec.version = AsyncJob::VERSION
+  spec.name = 'async_active_job'
+  spec.version = AsyncActiveJob::VERSION
   spec.authors = ['Denis Talakevich']
   spec.email = ['senid231@gmail.com']
 
   spec.summary = 'Multi-fiber, Postgres-based, ActiveJob backend for Ruby on Rails'
-  spec.homepage = 'https://github.com/senid231/async_job'
+  spec.homepage = 'https://github.com/senid231/async_active_job'
   spec.license = 'MIT'
   spec.required_ruby_version = '>= 2.6.0'
 

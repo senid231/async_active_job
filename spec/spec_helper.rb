@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'async_job'
+require 'async_active_job'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

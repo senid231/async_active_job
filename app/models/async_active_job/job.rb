@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-module AsyncJob
-  class Job < AsyncJob.configuration.active_record_base_class
-    self.table_name = 'async_jobs'
+module AsyncActiveJob
+  class Job < AsyncActiveJob.configuration.active_record_base_class
+    self.table_name = 'async_active_jobs'
 
     PRIORITY_MIN = -32_768
     PRIORITY_MAX = 32_767
@@ -10,8 +10,8 @@ module AsyncJob
     ATTEMPTS_MAX = 32_767
 
     before_validation on: :create do
-      self.queue_name = AsyncJob.configuration.default_queue_name if queue_name.blank?
-      self.priority ||= AsyncJob.configuration.default_priority
+      self.queue_name = AsyncActiveJob.configuration.default_queue_name if queue_name.blank?
+      self.priority ||= AsyncActiveJob.configuration.default_priority
     end
 
     validates :job_data, presence: true
@@ -31,7 +31,7 @@ module AsyncJob
     end
 
     scope :not_locked, -> do
-      timeout = AsyncJob.configuration.max_run_timeout
+      timeout = AsyncActiveJob.configuration.max_run_timeout
       where('locked_at IS NULL OR locked_at < ?', current_time_from_proper_timezone - timeout)
     end
 
@@ -52,7 +52,7 @@ module AsyncJob
     end
 
     class << self
-      # @param job_wrapper [AsyncJob::Adapter::JobWrapper]
+      # @param job_wrapper [AsyncActiveJob::Adapter::JobWrapper]
       # @param options [Hash] with keys:
       #   queue_name [String,nil]
       #   priority [Integer,nil]
@@ -64,35 +64,35 @@ module AsyncJob
         record
       end
 
-      # UPDATE async_jobs
+      # UPDATE async_active_jobs
       # SET locked_at = ?, locked_by = ?
       # WHERE id IN (
-      #   SELECT id FROM async_jobs WHERE ... ORDER BY ... LIMIT 1 FOR UPDATE
+      #   SELECT id FROM async_active_jobs WHERE ... ORDER BY ... LIMIT 1 FOR UPDATE
       # )
       # @param queue_names [Array,nil]
-      # @return [AsyncJob::Job,nil]
+      # @return [AsyncActiveJob::Job,nil]
       def next_with_lock(queue_names)
         quoted_name = connection.quote_table_name(table_name)
-        ready_scope = AsyncJob::Job.not_locked.ready.with_queues(queue_names).order_by_priority
+        ready_scope = AsyncActiveJob::Job.not_locked.ready.with_queues(queue_names).order_by_priority
         subquery = ready_scope.limit(1).lock(true).select(:id).to_sql
         sql = "UPDATE #{quoted_name} SET locked_at = ?, locked_by = ? WHERE id IN (#{subquery}) RETURNING *"
         result = find_by_sql([sql, current_time_from_proper_timezone, Process.pid])
         result[0]
       end
 
-      # @param async_job [AsyncJob::Job]
-      def perform_job(async_job)
-        async_job.perform
-        async_job.destroy!
+      # @param async_active_job [AsyncActiveJob::Job]
+      def perform_job(async_active_job)
+        async_active_job.perform
+        async_active_job.destroy!
       rescue StandardError => e
-        handle_failed_job(async_job, e)
+        handle_failed_job(async_active_job, e)
       end
 
       def calculate_max_attempts(active_job_class)
         if active_job_class.respond_to?(:max_attempts)
           active_job_class.max_attempts
         else
-          AsyncJob.configuration.default_max_attempts
+          AsyncActiveJob.configuration.default_max_attempts
         end
       end
 
@@ -101,31 +101,31 @@ module AsyncJob
         if active_job_class.respond_to?(:next_run_at)
           active_job_class.next_run_at(now, options)
         else
-          AsyncJob.configuration.default_next_run_at.call(now, options)
+          AsyncActiveJob.configuration.default_next_run_at.call(now, options)
         end
       end
 
-      # @param async_job [AsyncJob::Job]
+      # @param async_active_job [AsyncActiveJob::Job]
       # @param error [Exception]
-      def handle_failed_job(async_job, error)
-        attempts = async_job.attempts + 1
-        max_attempts = calculate_max_attempts(async_job.active_job_class)
+      def handle_failed_job(async_active_job, error)
+        attempts = async_active_job.attempts + 1
+        max_attempts = calculate_max_attempts(async_active_job.active_job_class)
 
         if attempts >= max_attempts
           next_run_at = nil
           failed_at = current_time_from_proper_timezone
         else
           next_run_at = calculate_next_run_at(
-                          async_job.active_job_class,
+                          async_active_job.active_job_class,
                           attempts: attempts,
                           max_attempts: max_attempts,
-                          run_at: async_job.run_at
+                          run_at: async_active_job.run_at
                         )
           failed_at = nil
         end
 
-        async_job.update!(
-          job_wrapper: async_job.job_wrapper,
+        async_active_job.update!(
+          job_wrapper: async_active_job.job_wrapper,
           attempts: attempts,
           last_error: format_error(error),
           run_at: next_run_at,
@@ -151,7 +151,7 @@ module AsyncJob
       job_data['job_id']
     end
 
-    # @return [AsyncJob::Adapter::JobWrapper] with job_data:
+    # @return [AsyncActiveJob::Adapter::JobWrapper] with job_data:
     #   "job_class"  => self.class.name,
     #   "job_id"     => job_id,
     #   "provider_job_id" => provider_job_id,
@@ -167,10 +167,10 @@ module AsyncJob
       return if job_data.nil?
 
       data = job_data.merge('provider_job_id' => id)
-      @job_wrapper ||= AsyncJob::Adapter::JobWrapper.new(data)
+      @job_wrapper ||= AsyncActiveJob::Adapter::JobWrapper.new(data)
     end
 
-    # @param job_wrapper [AsyncJob::Adapter::JobWrapper]
+    # @param job_wrapper [AsyncActiveJob::Adapter::JobWrapper]
     def job_wrapper=(job_wrapper)
       self.job_data = job_wrapper.job_data.except('provider_job_id')
     end

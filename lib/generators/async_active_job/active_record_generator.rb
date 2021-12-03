@@ -3,14 +3,14 @@
 require 'rails/generators/migration'
 require 'rails/generators/active_record'
 
-module AsyncJob
+module AsyncActiveJob
   class ActiveRecordGenerator < Rails::Generators::Base
     include Rails::Generators::Migration
 
     source_paths << File.join(__dir__, 'templates')
 
     def create_migration_file
-      migration_template 'migration.rb.erb', 'db/migrate/create_async_jobs.rb', migration_version: migration_version
+      migration_template 'migration.rb.erb', 'db/migrate/create_async_active_jobs.rb', migration_version: migration_version
     end
 
     def self.next_migration_number(dirname)

@@ -38,7 +38,7 @@ Layout/FirstArgumentIndentation:
 
 Lint/ScriptPermission:
   Exclude:
-    - 'lib/generators/async_job/templates/*'
+    - 'lib/generators/async_active_job/templates/*'
 
 Metrics/BlockLength:
   Max: 80

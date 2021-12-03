@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'async_job'
-require 'async_job/runner'
+require 'async_active_job'
+require 'async_active_job/runner'
 require 'dry/cli'
 
-module AsyncJob
+module AsyncActiveJob
   module CLI
     module Commands
       extend Dry::CLI::Registry
@@ -13,7 +13,7 @@ module AsyncJob
         desc 'Print version'
 
         def call(*)
-          Rails.logger.debug AsyncJob::VERSION
+          Rails.logger.debug AsyncActiveJob::VERSION
         end
       end
 
@@ -24,7 +24,7 @@ module AsyncJob
 
         def call(queues: nil, **)
           queues = queues&.split(',')
-          AsyncJob::Runner.start(queues: queues)
+          AsyncActiveJob::Runner.start(queues: queues)
         end
       end
 
