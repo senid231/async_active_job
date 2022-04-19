@@ -1,3 +1,5 @@
+[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://vshymanskyy.github.io/StandWithUkraine)
+
 # AsyncActiveJob
 
 [![Tests](https://github.com/senid231/async_active_job/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/senid231/async_active_job/actions/workflows/tests.yml)
